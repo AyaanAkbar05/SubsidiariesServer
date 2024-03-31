@@ -1,0 +1,6 @@
+@SubsidiariesServer_HostAddress = http://localhost:5131
+
+GET {{SubsidiariesServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
