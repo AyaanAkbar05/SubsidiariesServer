@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace ParentCompanyModel;
 
-public partial class ParentCompanySourceContext : DbContext
+public partial class ParentCompanySourceContext : IdentityDbContext<SubsdiariesUsers>
 {
     public ParentCompanySourceContext()
     {
@@ -29,6 +30,7 @@ public partial class ParentCompanySourceContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<ParentCompany>(entity =>
         {
             entity.HasKey(e => e.ParentCompanyId).HasName("PK__Table__026F1F3D9BABDD8E");

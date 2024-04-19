@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParentCompanyModel;
 
@@ -11,9 +12,11 @@ using ParentCompanyModel;
 namespace ParentCompanyModel.Migrations
 {
     [DbContext(typeof(ParentCompanySourceContext))]
-    partial class ParentCompanySourceContextModelSnapshot : ModelSnapshot
+    [Migration("20240418215722_Identity_1")]
+    partial class Identity_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

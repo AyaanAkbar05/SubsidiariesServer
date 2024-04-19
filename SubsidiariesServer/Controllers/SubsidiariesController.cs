@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ParentCompanyModel;
 using SubsidiariesServer.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SubsidiariesServer.Controllers
 {
@@ -22,7 +23,7 @@ namespace SubsidiariesServer.Controllers
         {
             return await context.Subsidiaries.ToListAsync();
         }
-
+        [Authorize]
         [HttpGet("GetRevenue")]
         public async Task<ActionResult<IEnumerable<ParentCompanyRevenue>>> GetRevenue()
         {

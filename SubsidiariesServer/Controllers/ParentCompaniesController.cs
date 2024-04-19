@@ -40,7 +40,11 @@ namespace SubsidiariesServer.Controllers
 
             return parentCompany;
         }
-
+        [HttpGet("ParentCompaniesSubsidiaries/{id}")]
+        public async Task<ActionResult<IEnumerable<Subsidiary>>> GetCitiesByCountry(int id)
+        {
+            return await _context.Subsidiaries.Where(c => c.ParentCompanyId == id).ToListAsync();
+        }
         // PUT: api/ParentCompanies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
