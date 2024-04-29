@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using ParentCompanyModel;
 using Microsoft.IdentityModel.Tokens;
 using SubsidiariesServer;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,39 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c => {
+    c.SwaggerDoc("v1", new()
+    {
+        Contact = new()
+        {
+            Email = "ayaan@csun.edu",
+            Name = "ayaan",
+            Url = new("https://canvas.csun.edu/courses/128137")
+        },
+        Description = "APIs for Subsidiaries",
+        Title = "Subsidiaries APIs",
+        Version = "V1"
+    });
+    OpenApiSecurityScheme jwtSecurityScheme = new()
+    {
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Name = "JWT Authentication",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Description = "Please enter *only* JWT token",
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, jwtSecurityScheme);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, [] }
+    });
+});
 
 builder.Services.AddDbContext<ParentCompanySourceContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

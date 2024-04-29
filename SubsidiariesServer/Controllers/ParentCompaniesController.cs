@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ParentCompanyModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SubsidiariesServer.Controllers
 {
@@ -41,7 +42,8 @@ namespace SubsidiariesServer.Controllers
             return parentCompany;
         }
         [HttpGet("ParentCompaniesSubsidiaries/{id}")]
-        public async Task<ActionResult<IEnumerable<Subsidiary>>> GetCitiesByCountry(int id)
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<Subsidiary>>> GetSubsidairiesByParentCompany(int id)
         {
             return await _context.Subsidiaries.Where(c => c.ParentCompanyId == id).ToListAsync();
         }
