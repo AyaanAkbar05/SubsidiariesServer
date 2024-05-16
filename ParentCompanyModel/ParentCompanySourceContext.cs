@@ -23,6 +23,10 @@ public partial class ParentCompanySourceContext : IdentityDbContext<SubsdiariesU
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        if (optionsBuilder.IsConfigured)
+        {
+            return;
+        }
         IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
         var config = builder.Build();
         optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));

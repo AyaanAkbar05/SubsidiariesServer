@@ -12,6 +12,7 @@ namespace SubsidiariesServer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class ParentCompaniesController : ControllerBase
     {
         private readonly ParentCompanySourceContext _context;
