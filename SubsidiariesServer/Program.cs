@@ -72,7 +72,6 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddScoped<JwtHandler>();
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

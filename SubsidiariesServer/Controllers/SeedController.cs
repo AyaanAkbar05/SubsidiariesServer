@@ -13,6 +13,7 @@ using CsvHelper;
 using SubsidiariesServer.Data;
 using Microsoft.AspNetCore.Identity;
 using System.Diagnostics.Metrics;
+using SubsidiariesServer.DTO;
 
 
 namespace SubsidiariesServer.Controllers
@@ -20,7 +21,7 @@ namespace SubsidiariesServer.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class SeedController(ParentCompanySourceContext db, IHostEnvironment environment,
-        UserManager<SubsdiariesUsers> userManager) : ControllerBase
+        UserManager<SubsdiariesUsers> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration) : ControllerBase
     {
         private readonly string _pathName = Path.Combine(environment.ContentRootPath, "Data/subsidiaries.csv");
 
@@ -105,28 +106,60 @@ namespace SubsidiariesServer.Controllers
 
             return new JsonResult(countriesByName.Count);
         }
-
         [HttpPost("Users")]
-        public async Task<ActionResult> SeedUsers()
+        public async Task<ActionResult> SeedUsers([FromBody] List<UserSeedData> users)
         {
-            (string name, string email) = ("user1", "comp584@csun.edu");
-            SubsdiariesUsers user = new()
-            {
-                UserName = name,
-                Email = email,
-                SecurityStamp = Guid.NewGuid().ToString()
-            };
-            if (await userManager.FindByNameAsync(name) is not null)
-            {
-                user.UserName = "user2";
-            }
-            _ = await userManager.CreateAsync(user, "P@ssw0rd!")
-                ?? throw new InvalidOperationException();
-            user.EmailConfirmed = true;
-            user.LockoutEnabled = false;
-            await db.SaveChangesAsync();
+            string role_RegisteredUser = "RegisteredUser";
+            string role_Administrator = "Administrator";
 
+            if (await roleManager.FindByNameAsync(role_RegisteredUser) == null)
+                await roleManager.CreateAsync(new IdentityRole(role_RegisteredUser));
+
+            if (await roleManager.FindByNameAsync(role_Administrator) == null)
+                await roleManager.CreateAsync(new IdentityRole(role_Administrator));
+
+            foreach (var userSeed in users)
+            {
+                SubsdiariesUsers user = new()
+                {
+                    UserName = userSeed.UserName,
+                    Email = userSeed.Email,
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
+
+                if (await userManager.FindByNameAsync(userSeed.UserName) is not null)
+                {
+                    return BadRequest($"Username {userSeed.UserName} already exists.");
+                }
+
+                var result = await userManager.CreateAsync(user, userSeed.Password);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors);
+                }
+
+                result = await userManager.AddToRoleAsync(user, role_RegisteredUser);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors);
+                }
+
+                if (userSeed.IsAdministrator)
+                {
+                    result = await userManager.AddToRoleAsync(user, role_Administrator);
+                    if (!result.Succeeded)
+                    {
+                        return BadRequest(result.Errors);
+                    }
+                }
+
+                user.EmailConfirmed = true;
+                user.LockoutEnabled = false;
+            }
+
+            await db.SaveChangesAsync();
             return Ok();
         }
+
     }
 }

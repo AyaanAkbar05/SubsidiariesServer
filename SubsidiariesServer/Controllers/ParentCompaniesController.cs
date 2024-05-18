@@ -24,6 +24,7 @@ namespace SubsidiariesServer.Controllers
 
         // GET: api/ParentCompanies
         [HttpGet]
+        [Authorize(Roles = "RegisteredUser")]
         public async Task<ActionResult<IEnumerable<ParentCompany>>> GetParentCompanies()
         {
             return await _context.ParentCompanies.ToListAsync();
@@ -43,7 +44,7 @@ namespace SubsidiariesServer.Controllers
             return parentCompany;
         }
         [HttpGet("ParentCompaniesSubsidiaries/{id}")]
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<IEnumerable<Subsidiary>>> GetSubsidairiesByParentCompany(int id)
         {
             return await _context.Subsidiaries.Where(c => c.ParentCompanyId == id).ToListAsync();
